@@ -1,0 +1,34 @@
+MODULE locno_read.
+
+  CHECK status-action = hinzufuegen OR status-action = kopieren.
+
+  dynpfields-fieldname = '/SAPAPO/V_SETPCM-LOCNO'.
+  APPEND dynpfields.
+  CALL FUNCTION 'DYNP_VALUES_READ'
+       EXPORTING
+            dyname               = '/SAPAPO/SAPLPCM_PROF'
+            dynumb               = sy-dynnr
+       TABLES
+            dynpfields           = dynpfields
+       EXCEPTIONS
+            invalid_abapworkarea = 1
+            invalid_dynprofield  = 2
+            invalid_dynproname   = 3
+            invalid_dynpronummer = 4
+            invalid_request      = 5
+            no_fielddescription  = 6
+            invalid_parameter    = 7
+            undefind_error       = 8
+            double_conversion    = 9
+            stepl_not_found      = 10
+            OTHERS               = 11.
+
+  IF sy-subrc = 0.
+    READ TABLE dynpfields INDEX 1.
+    /sapapo/v_setpcm-locno = dynpfields-fieldvalue.
+  ELSE.
+    MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno
+            WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+  ENDIF.
+
+ENDMODULE
